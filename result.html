@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico">
+    <title>Estimation Result</title>
+    <style>
+    .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .plan-type-container {
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+
+        .result{
+            background-color: #ffffff;
+            padding: 10px;
+        }
+        .project-type-container{
+          background-color: #f0f0f0;
+            padding: 10px;
+        }
+        @page {
+    size: auto;   /* auto is the initial value */
+    margin: 0;  /* this affects the margin in the printer settings */
+}
+  </style>
+</head>
+<body>
+    <h1><img class="logo" src="companylogo.jpg" alt="UIPL"></h1>
+    
+    <div class="container"> 
+
+
+        <h7>Budget Bliss: Commercial Design</h7>
+        <table>
+            <thead>
+                <tr>
+                    <th><strong> Project Details</strong></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Property Type</strong></td>
+                    <td id="PropertyTypeCell"></td>
+                </tr>
+                    <td><strong>Carpet Area (sq.ft)</strong></td>
+                    <td id = "CarpetAreaCell"></td>
+                </tr>
+                <tr>
+                    <td><strong>Project Type</strong></td>
+                    <td id="ProjectTypeCell"></td>
+                </tr>
+                    <td><strong>City</strong></td>
+                    <td id="CityCell"></td>
+                </tr>
+                    <td><strong>Styling</strong></td>
+                    <td id="StylingCell"></td>
+                </tr>
+                    <td><strong>Plan Type</strong></td>
+                    <td id="PlanTypeCell"></td>
+                </tr>
+                <td><strong>Estimated Price</strong></td>
+                <td id="EstimatedPriceCell"></td>
+
+        <table>
+            <thead>
+                <tr>
+                    
+                    <th id = "TablePlan2"><strong>Plan Type: </strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="description"><ul id="planDescription"></ul></td>
+                </tr>
+                
+
+
+</tbody>
+</table>
+<div class = "Disclaimer">
+    
+    <strong>Disclaimer:</strong>
+    <br>
+    *This document is for informational purposes only and does not create any legally binding obligations. The figures presented are preliminary estimates and should not be considered as the final project cost but rather serve as a general guideline. It is essential to note that these estimates are subject to change, considering various factors that can impact project pricing based on market dynamics. For a precise project budget, consider utilising our design/turnkey contract services. Our expert consultation will guide you through the process.
+</div>
+    </div>
+
+      
+    <button id="download-pdf-btn">Download PDF</button>
+
+    <script>
+        
+        // Get URL parameters using URLSearchParams
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectType = urlParams.get("projectType");
+        const city = urlParams.get("city");
+        const propertyType = urlParams.get("propertyType");
+        const styling = urlParams.get("styling");
+        //const ceilingHeight = urlParams.get("ceilingHeight");
+        const plan = urlParams.get("plan");
+        const carpetArea = parseFloat(urlParams.get("carpetArea"));
+        //const selectedAddOns = urlParams.get("selectedAddOns").split(",");
+        const estimatedPrice = parseFloat(urlParams.get("estimatedPrice"));
+
+        
+    const propertyTypeCell = document.getElementById("PropertyTypeCell");
+    
+    // Set the text content of the house size cell to the value of selectedHouseSizeParam
+    propertyTypeCell.textContent += propertyType.charAt(0).toUpperCase() + propertyType.slice(1);
+    
+    const carpetAreaCell = document.getElementById("CarpetAreaCell");
+    
+    // Set the text content of the house size cell to the value of selectedHouseSizeParam
+    carpetAreaCell.textContent += carpetArea
+    const projectTypeCell = document.getElementById("ProjectTypeCell");
+    projectTypeCell.textContent += projectType.charAt(0).toUpperCase() + projectType.slice(1);
+    const cityCell = document.getElementById("CityCell");
+    cityCell.textContent += city.charAt(0).toUpperCase() + city.slice(1);
+    const stylingCell = document.getElementById("StylingCell");
+    stylingCell.textContent += styling.charAt(0).toUpperCase() + styling.slice(1);
+    const planTypeCell = document.getElementById("PlanTypeCell");
+    planTypeCell.textContent += plan.charAt(0).toUpperCase() + plan.slice(1);
+    const estimatedPriceCell = document.getElementById("EstimatedPriceCell");
+
+// Assuming totalCostParam is a numeric value, e.g., 10000
+const formattedPrice = parseFloat(estimatedPrice).toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR"
+});
+console.log(`Selected Project Type: ${plan}`);
+estimatedPriceCell.textContent = formattedPrice;
+const planTypeCell2 = document.getElementById("TablePlan2");
+planTypeCell2.textContent += plan.charAt(0).toUpperCase() + plan.slice(1);
+
+const planDescriptionList = document.getElementById("planDescription");
+
+// Define the plan descriptions based on selectedPlanTypeParam
+let planDescription = "";
+
+if (plan === "Premium") {
+    planDescription = `
+            
+            <li>Research & Study of Requirements</li>
+            <li>Style & Theme Selection</li>
+            <li>Effective Space Planning</li>
+            <li>Furniture, Civil, Electrical, Flooring & Ceiling Layout</li>
+            <li>Colour Concept</li>
+            <li>Customized Conceptual Designing with Elevation</li>
+            <li>Detailed Working Drawings</li>
+            <li>3D Images to Visualize Important Areas</li>
+            <li>Exclusive Arts for Desired Ambiance</li>
+    `;
+} else if (plan === "Premium Plus") {
+    planDescription = `
+            <li>Research & Study of Requirements</li>
+            <li>Style & Theme Selection</li>
+            <li>Effective Space Planning</li>
+            <li>Furniture, Civil, Electrical, Flooring & Ceiling Layout</li>
+            <li>Colour Concept</li>
+            <li>Customized Conceptual Designing with Elevation</li>
+            <li>Detailed Working Drawings</li>
+            <li> 3D Images to Visualize Important Areas</li>
+            <li> Exclusive Arts for Desired Ambiance</li>
+    `;
+} else if (plan=== "Luxury") {
+    planDescription = `
+            <li>Research & Study of Requirements</li>
+            <li>Style & Theme Selection</li>
+            <li>Effective Space Planning</li>
+            <li>Furniture, Civil, Electrical, Flooring & Ceiling Layout</li>
+            <li>Colour Concept</li>
+            <li>Customized Conceptual Designing with Elevation</li>
+            <li>Detailed Working Drawings</li>
+            <li> 3D Images to Visualize Important Areas</li>
+            <li> Exclusive Arts for Desired Ambiance</li>
+            <li>Printed Coffee Table Book</li>
+    `;
+} else if (plan === "Ultra Luxury") {
+    planDescription = `
+            <li>Research & Study of Requirements</li>
+            <li>Style & Theme Selection</li>
+            <li>Effective Space Planning</li>
+            <li>Furniture, Civil, Electrical, Flooring & Ceiling Layout</li>
+            <li>Colour Concept</li>
+            <li>Customized Conceptual Designing with Elevation</li>
+            <li>Detailed Working Drawings</li>
+            <li> 3D Images to Visualize Important Areas</li>
+            <li> Exclusive Arts for Desired Ambiance</li>
+            <li>Printed Coffee Table Book</li>
+            <li> 3D Walkthrough</li>
+
+    `;
+} else {
+    planDescription = "Plan description not available.";
+}
+
+// Set the inner HTML of the planDescriptionList with the generated plan description
+planDescriptionList.innerHTML = planDescription;
+
+
+
+    
+    
+    
+
+       </script>
+      
+     
+      <script>
+        document.getElementById("download-pdf-btn").addEventListener("click", function () {
+            window.print();
+        });
+    </script>
+    
+</body>
+</html>
